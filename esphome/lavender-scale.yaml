@@ -28,31 +28,22 @@ captive_portal:
 
 sensor:
   - platform: hx711
-    name: "Lavender Scale Raw"
-    id: lavender_scale_raw
+    name: "Lavender Scale"
     dout_pin: GPIO21
     sck_pin: GPIO22
     gain: 128
-    update_interval: 60s
-    filters:
-      - median:
-          window_size: 5
-          send_every: 1
-          send_first_at: 1
-    on_value:
-      then:
-        - component.update: lavender_scale_grams
-
-  - platform: template
-    name: "Lavender Scale Grams"
-    id: lavender_scale_grams
+    update_interval: 10s
     unit_of_measurement: "g"
     accuracy_decimals: 1
-    lambda: |-
-      // This is a placeholder calibration factor.
-      // You will need to calibrate the scale to get the correct value.
-      // See: https://esphome.io/components/sensor/hx711.html#calibration
-      return id(lavender_scale_raw).state / 400.0;
+    filters:
+      - median:
+          window_size: 3
+          send_every: 1
+      - calibrate_linear:
+          # (Raw Value) -> (Actual Grams)
+          - 29430 -> 0.0
+          - -14750 -> 100.0
+    icon: "mdi:scale"
 
 deep_sleep:
   run_duration: 60s
