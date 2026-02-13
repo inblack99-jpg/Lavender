@@ -16,8 +16,8 @@ api:
 ota:
 
 wifi:
-  ssid: "YOUR_WIFI_SSID"
-  password: "YOUR_WIFI_PASSWORD"
+  ssid: "private6"
+  password: "Scooby49"
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
