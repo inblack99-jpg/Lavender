@@ -4,7 +4,7 @@ This document lists all the necessary hardware components for building the smart
 
 | Quantity | Component | Description | Notes / Example Link |
 | :---: | :--- | :--- | :--- |
-| 1 | ESP32 Development Board | The microcontroller that will run our code. The "ESP32S Super Mini" is specified, but any ESP32 board with at least 4 available GPIO pins will work. | [Example on Amazon](https://www.amazon.com/dp/B086MLNH7N) |
+| 1 | ESP32 Development Board | The microcontroller that will run our code. **A model with a built-in LiPo battery charging circuit is required.** The "ESP32S Super Mini" is a specific model that includes this feature. | [Example on Amazon](https://www.amazon.com/dp/B086MLNH7N) |
 | 1 | HX711 Load Cell Amplifier | A breakout board that reads the data from the load cell and communicates it to the ESP32. The "Keyes 234" board is a common variant. | [Example on Amazon](https://www.amazon.com/dp/B07Y52626G) |
 | 1 | Straight Bar Load Cell (5kg) | The sensor that measures weight. A 5kg capacity is more than enough for a potted plant and provides good resolution for this use case. | [Example on Amazon](https://www.amazon.com/dp/B075595F4X) |
 | 1 | Single Cell Lithium Battery | To power the device. A standard 3.7V LiPo or Li-Ion battery with a JST connector is recommended. Capacity of ~1200mAh is a good starting point. | [Example on Adafruit](https://www.adafruit.com/product/258) |
@@ -17,5 +17,4 @@ This document lists all the necessary hardware components for building the smart
 
 ### Important Notes:
 
-*   **ESP32 Charging Circuit:** Please ensure the specific ESP32 board you purchase has a built-in charge controller for single-cell lithium batteries if you plan to use the solar cell. The "ESP32S Super Mini" often includes this.
 *   **Physical Assembly:** The plexiglass frame will require cutting and drilling to mount the load cell and create the scale platform.
