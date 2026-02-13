@@ -1,0 +1,59 @@
+esphome:
+  name: lavender_scale
+  friendly_name: Lavender Scale
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+wifi:
+  ssid: "YOUR_WIFI_SSID"
+  password: "YOUR_WIFI_PASSWORD"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Lavender Scale Fallback Hotspot"
+    password: "lavender-setup"
+
+captive_portal:
+
+sensor:
+  - platform: hx711
+    name: "Lavender Scale Raw"
+    id: lavender_scale_raw
+    dout_pin: GPIO21
+    sck_pin: GPIO22
+    gain: 128
+    update_interval: 60s
+    filters:
+      - median:
+          window_size: 5
+          send_every: 1
+          send_first_at: 1
+    on_value:
+      then:
+        - component.update: lavender_scale_grams
+
+  - platform: template
+    name: "Lavender Scale Grams"
+    id: lavender_scale_grams
+    unit_of_measurement: "g"
+    accuracy_decimals: 1
+    lambda: |-
+      // This is a placeholder calibration factor.
+      // You will need to calibrate the scale to get the correct value.
+      // See: https://esphome.io/components/sensor/hx711.html#calibration
+      return id(lavender_scale_raw).state / 400.0;
+
+deep_sleep:
+  run_duration: 60s
+  sleep_duration: 10min
