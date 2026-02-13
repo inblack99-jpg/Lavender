@@ -28,6 +28,12 @@ This document tracks the progress of the Project Lavender proof of concept, spec
     3.  The user provided the PAT during an interactive `git push` prompt.
     4.  To prevent repeated prompts, we configured the Git **credential helper** (`git config --global credential.helper store`). This securely stored the PAT on the user's local machine, allowing subsequent `git` commands from the Gemini CLI to execute without requiring further interactive authentication.
 
+**3. Obstacle: Inadvertent GitHub Issue Closure**
+
+*   **Description:** A process issue arose where GitHub issues were being closed, but the agent's core tools did not include a function for direct issue management. The user correctly noted that the agent's actions were causing the issues to be closed.
+*   **Investigation:** A deep investigation was conducted to determine the cause. The agent's own `git log` was examined for clues.
+*   **Discovery & Resolution:** The investigation revealed that specific keywords (`Resolves #2`, `Resolves #3`) were used in the commit message bodies. This is a built-in GitHub feature where keywords like `closes`, `fixes`, or `resolves` followed by an issue number will automatically close the corresponding issue when the commit is pushed to the main branch. The agent's understanding of its capabilities was updated to include this indirect, but powerful, interaction with the GitHub platform. This resolved the process issue and clarified the mechanism for future issue management.
+
 ### Current Status:
 
 The version control foundation is now solid. The Gemini CLI can autonomously modify files and push changes to the remote GitHub repository, unblocking further progress on the project's core deliverables. This successful resolution serves as a key milestone for the proof of concept, demonstrating effective troubleshooting of real-world development environment issues.

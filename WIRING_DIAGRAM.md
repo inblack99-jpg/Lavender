@@ -1,8 +1,20 @@
 # Project Lavender: Wiring Diagram
 
-This document outlines the pin connections between the ESP32, the HX711 Amplifier, and the Load Cell. Please ensure your device is **unplugged** from power while making these connections.
+This document outlines the pin connections between the ESP32, the HX711 Amplifier, the Load Cell, and the power system components. Please ensure your device is **unplugged** from power while making these connections.
 
 ## Component Pinouts
+
+### Power System
+- **Solar Cell:** Provides charging power.
+  - `+`: Positive Output
+  - `-`: Negative Output
+- **TP4056 LiPo Charger Module:** Manages charging and provides a regulated output.
+  - `IN+`, `IN-`: Input from Solar Cell
+  - `B+`, `B-`: Connection to LiPo Battery
+  - `OUT+`, `OUT-`: 5V Output to the ESP32
+- **3.7V LiPo Battery:** Stores power for the system.
+  - `+`: Positive Terminal
+  - `-`: Negative Terminal
 
 ### ESP32 (Typical "ESP32S Super Mini")
 - `5V` or `VBUS`: 5V Power Input
@@ -29,30 +41,42 @@ This document outlines the pin connections between the ESP32, the HX711 Amplifie
 This diagram shows the direct connections to be made between the components.
 
 ```
-+------------------+                    +-----------------+
-| ESP32 Super Mini |                    | HX711 Amplifier |
-|                  |                    |                 |
-|              GND |<------------------>| GND             |
-|               5V |<------------------>| VCC             |
-|                  |                    |                 |
-|           GPIO22 |<------------------>| SCK             |
-|           GPIO21 |<------------------>| DT              |
-|                  |                    |                 |
-+------------------+                    +-----------------+
-                                              | | | |
-                                              | | | |
-                                              | | | +------> E+ (Red)
-                                              | | +------> E- (Black)
-                                              | +------> A+ (Green)
-                                              +------> A- (White)
-                                                   |
-                                            +-------------+
-                                            |  Load Cell  |
-                                            +-------------+
++------------+     +------------------------+     +------------------+                    +-----------------+
+| Solar Cell |---->| TP4056 Charger         |---->| ESP32 Super Mini |                    | HX711 Amplifier |
+|            |     |                        |     |                  |                    |                 |
+| [+]      [+]--->| IN+              OUT+  |---->| 5V               |                    |                 |
+| [-]      [-]--->| IN-              OUT-  |---->| GND              |------------------->| GND             |
+|            |     |                        |     |                  |                    |                 |
++------------+     | B+                 B-  |     |           GPIO22 |<------------------>| SCK             |
+                   | |                  |   |     |           GPIO21 |<------------------>| DT              |
+                   | +------------------+   |     |                  |                    |                 |
+                   | |                      |     +------------------+                    +-----------------+
+                   | | (LiPo Battery)       |                                                 | | | |
+                   +-+----------------------+                                                 | | | |
+                                                                                              | | | +------> E+ (Red)
+                                                                                              | | +------> E- (Black)
+                                                                                              | +------> A+ (Green)
+                                                                                              +------> A- (White)
+                                                                                                   |
+                                                                                            +-------------+
+                                                                                            |  Load Cell  |
+                                                                                            +-------------+
 ```
 
 ## Connection Summary Table
 
+### Power Connections
+| From Component | From Pin | To Component | To Pin | Notes |
+| :--- | :---: | :--- | :---: | :--- |
+| Solar Cell | `+` | TP4056 | `IN+` | Provides charging power. |
+| Solar Cell | `-` | TP4056 | `IN-` | Ground for charger input. |
+| LiPo Battery | `+` | TP4056 | `B+` | Connects battery for charging. |
+| LiPo Battery | `-` | TP4056 | `B-` | Ground for battery. |
+| TP4056 | `OUT+` | ESP32 | `5V` | Powers the ESP32. |
+| TP4056 | `OUT-` | ESP32 | `GND` | Common ground reference for ESP32. |
+
+
+### Sensor Connections
 | ESP32 Pin | Connects To | HX711 Pin | Notes |
 | :---: | :---: | :---: | :--- |
 | `5V` | --> | `VCC` | Powers the amplifier. |
