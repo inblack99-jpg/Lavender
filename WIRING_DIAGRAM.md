@@ -5,25 +5,23 @@ This document outlines the pin connections between the ESP32, the HX711 Amplifie
 ## Component Pinouts
 
 ### Power System
-- **Solar Cell:** Provides charging power.
+- **Solar Cell (5V Regulated):** Provides charging power. *Assumes a regulated 5V output.* 
   - `+`: Positive Output
   - `-`: Negative Output
-- **TP4056 LiPo Charger Module:** Manages charging and provides a regulated output.
-  - `IN+`, `IN-`: Input from Solar Cell
-  - `B+`, `B-`: Connection to LiPo Battery
-  - `OUT+`, `OUT-`: 5V Output to the ESP32
 - **3.7V LiPo Battery:** Stores power for the system.
-  - `+`: Positive Terminal
-  - `-`: Negative Terminal
+  - `+`: Positive Terminal (Connects to ESP32 B+)
+  - `-`: Negative Terminal (Connects to ESP32 B-)
 
-### ESP32 (Typical "ESP32S Super Mini")
-- `5V` or `VBUS`: 5V Power Input
-- `GND`: Ground
+### ESP32 (Typical "ESP32S Super Mini" with Built-in LiPo Charger)
+- `5V` or `VBUS`: 5V Power Input (for Solar Cell input)
+- `GND`: Ground (for Solar Cell input)
+- `B+`: LiPo Battery Positive Terminal
+- `B-`: LiPo Battery Negative Terminal
 - `GPIO22`: General Purpose Input/Output Pin 22 (for SCK)
 - `GPIO21`: General Purpose Input/Output Pin 21 (for DOUT)
 
 ### HX711 Amplifier
-- `VCC`: Power Input (connects to 5V)
+- `VCC`: Power Input (connects to 5V from ESP32)
 - `GND`: Ground
 - `SCK`: Serial Clock (Output)
 - `DT`: Data (Input, often labeled DOUT)
@@ -41,26 +39,29 @@ This document outlines the pin connections between the ESP32, the HX711 Amplifie
 This diagram shows the direct connections to be made between the components.
 
 ```
-+------------+     +------------------------+     +------------------+                    +-----------------+
-| Solar Cell |---->| TP4056 Charger         |---->| ESP32 Super Mini |                    | HX711 Amplifier |
-|            |     |                        |     |                  |                    |                 |
-| [+]      [+]--->| IN+              OUT+  |---->| 5V               |                    |                 |
-| [-]      [-]--->| IN-              OUT-  |---->| GND              |------------------->| GND             |
-|            |     |                        |     |                  |                    |                 |
-+------------+     | B+                 B-  |     |           GPIO22 |<------------------>| SCK             |
-                   | |                  |   |     |           GPIO21 |<------------------>| DT              |
-                   | +------------------+   |     |                  |                    |                 |
-                   | |                      |     +------------------+                    +-----------------+
-                   | | (LiPo Battery)       |                                                 | | | |
-                   +-+----------------------+                                                 | | | |
-                                                                                              | | | +------> E+ (Red)
-                                                                                              | | +------> E- (Black)
-                                                                                              | +------> A+ (Green)
-                                                                                              +------> A- (White)
-                                                                                                   |
-                                                                                            +-------------+
-                                                                                            |  Load Cell  |
-                                                                                            +-------------+
++------------+                          +------------------+                    +-----------------+
+| Solar Cell |------------------------->| ESP32 Super Mini |                    | HX711 Amplifier |
+| (5V Reg.)  |                          | (with LiPo Chrgr)|                    |                 |
+| [+]        |------------------------->| 5V / VBUS        |------------------->| VCC             |
+| [-]        |------------------------->| GND              |------------------->| GND             |
+|            |                          |                  |                    |                 |
++------------+                          | B+               |<-------------------| + (LiPo Battery) |
+                                        | B-               |<-------------------| - (LiPo Battery) |
+                                        |                  |                    |                 |
+                                        |           GPIO22 |<------------------>| SCK             |
+                                        |           GPIO21 |<------------------>| DT              |
+                                        |                  |                    |                 |
+                                        +------------------+                    +-----------------+
+                                                                                      | | | |
+                                                                                      | | | |
+                                                                                      | | | +------> E+ (Red)
+                                                                                      | | +------> E- (Black)
+                                                                                      | +------> A+ (Green)
+                                                                                      +------> A- (White)
+                                                                                           |
+                                                                                    +-------------+
+                                                                                    |  Load Cell  |
+                                                                                    +-------------+
 ```
 
 ## Connection Summary Table
@@ -68,18 +69,16 @@ This diagram shows the direct connections to be made between the components.
 ### Power Connections
 | From Component | From Pin | To Component | To Pin | Notes |
 | :--- | :---: | :--- | :---: | :--- |
-| Solar Cell | `+` | TP4056 | `IN+` | Provides charging power. |
-| Solar Cell | `-` | TP4056 | `IN-` | Ground for charger input. |
-| LiPo Battery | `+` | TP4056 | `B+` | Connects battery for charging. |
-| LiPo Battery | `-` | TP4056 | `B-` | Ground for battery. |
-| TP4056 | `OUT+` | ESP32 | `5V` | Powers the ESP32. |
-| TP4056 | `OUT-` | ESP32 | `GND` | Common ground reference for ESP32. |
+| Solar Cell | `+` | ESP32 | `5V` or `VBUS` | Provides regulated 5V power to the ESP32. |
+| Solar Cell | `-` | ESP32 | `GND` | Common ground for solar input. |
+| LiPo Battery | `+` | ESP32 | `B+` | Connects to ESP32's internal charger. |
+| LiPo Battery | `-` | ESP32 | `B-` | Ground for LiPo battery. |
 
 
 ### Sensor Connections
 | ESP32 Pin | Connects To | HX711 Pin | Notes |
 | :---: | :---: | :---: | :--- |
-| `5V` | --> | `VCC` | Powers the amplifier. |
+| `5V` | --> | `VCC` | Powers the amplifier (from ESP32's regulated 5V). |
 | `GND` | --> | `GND` | Common ground reference. |
 | `GPIO21` | --> | `DT` | Data line from the amplifier. |
 | `GPIO22` | --> | `SCK` | Clock line to the amplifier. |
