@@ -17,7 +17,7 @@ This document outlines the pin connections between the ESP32, the HX711 Amplifie
 - `GND`: Ground (for Solar Cell input)
 - `B+`: LiPo Battery Positive Terminal
 - `B-`: LiPo Battery Negative Terminal
-- `GPIO22`: General Purpose Input/Output Pin 22 (for SCK)
+- `GPIO1`: General Purpose Input/Output Pin 22 (for SCK)
 - `GPIO21`: General Purpose Input/Output Pin 21 (for DOUT)
 
 ### HX711 Amplifier
@@ -48,7 +48,7 @@ This diagram shows the direct connections to be made between the components.
 +------------+                          | B+               |<-------------------| + (LiPo Battery) |
                                         | B-               |<-------------------| - (LiPo Battery) |
                                         |                  |                    |                 |
-                                        |           GPIO22 |<------------------>| SCK             |
+                                        |           GPIO1 |<------------------>| SCK             |
                                         |           GPIO21 |<------------------>| DT              |
                                         |                  |                    |                 |
                                         +------------------+                    +-----------------+
@@ -81,7 +81,7 @@ This diagram shows the direct connections to be made between the components.
 | `5V` | --> | `VCC` | Powers the amplifier (from ESP32's regulated 5V). |
 | `GND` | --> | `GND` | Common ground reference. |
 | `GPIO21` | --> | `DT` | Data line from the amplifier. |
-| `GPIO22` | --> | `SCK` | Clock line to the amplifier. |
+| `GPIO1` | --> | `SCK` | Clock line to the amplifier. |
 
 | HX711 Pin | Connects To | Load Cell Wire |
 | :---: | :---: | :---: |
