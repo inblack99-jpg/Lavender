@@ -67,6 +67,10 @@ sensor:
     unit_of_measurement: "V"
     icon: "mdi:battery"
     accuracy_decimals: 2
+    filters:
+      # The battery voltage is measured using a 1:2 voltage divider (two 100kΩ resistors).
+      # This scales the voltage down by half. We multiply the ADC reading by 2.0 to get the true battery voltage.
+      - multiply: 2.0
 
 globals:
   - id: ota_mode
