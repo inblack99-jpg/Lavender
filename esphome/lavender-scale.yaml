@@ -93,15 +93,18 @@ switch:
   - platform: template
     name: "Lavender Scale OTA Mode"
     id: ota_mode_switch
+    lambda: 'return id(ota_mode);'
     optimistic: true
     on_turn_on:
       - globals.set:
           id: ota_mode
           value: 'true'
+      - deep_sleep.prevent: deep_sleep_component
     on_turn_off:
       - globals.set:
           id: ota_mode
           value: 'false'
+      - deep_sleep.allow: deep_sleep_component
 
 deep_sleep:
   id: deep_sleep_component
