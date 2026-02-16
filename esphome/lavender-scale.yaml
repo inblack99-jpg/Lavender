@@ -1,5 +1,5 @@
 esphome:
-  name: lavender_scale
+  name: lavender-scale
   friendly_name: Lavender Scale
   on_boot:
     priority: 600
