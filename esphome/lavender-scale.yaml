@@ -74,8 +74,6 @@ sensor:
     pin: GPIO4
     attenuation: auto
     update_interval: 60s
-    filters:
-      - multiply: 2.0
     unit_of_measurement: "V"
     icon: "mdi:battery"
     accuracy_decimals: 2
