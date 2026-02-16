@@ -10,6 +10,11 @@ esphome:
           green: 0%
           blue: 0%
           brightness: 25%
+      - if:
+          condition:
+            lambda: 'return id(ota_mode);'
+          then:
+            - deep_sleep.prevent: deep_sleep_component
 
 esp32:
   variant: esp32s3
@@ -78,6 +83,27 @@ sensor:
     icon: "mdi:battery"
     accuracy_decimals: 2
 
+globals:
+  - id: ota_mode
+    type: bool
+    restore_value: yes
+    initial_value: 'false'
+
+switch:
+  - platform: template
+    name: "Lavender Scale OTA Mode"
+    id: ota_mode_switch
+    optimistic: true
+    on_turn_on:
+      - globals.set:
+          id: ota_mode
+          value: 'true'
+    on_turn_off:
+      - globals.set:
+          id: ota_mode
+          value: 'false'
+
 deep_sleep:
+  id: deep_sleep_component
   run_duration: 60s
   sleep_duration: 10min
