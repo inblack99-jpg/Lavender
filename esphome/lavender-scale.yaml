@@ -79,7 +79,7 @@ switch:
     name: "Lavender Scale OTA Mode"
     id: ota_mode_switch
     lambda: 'return id(ota_mode);'
-    optimistic: true
+    optimistic: false
     on_turn_on:
       - globals.set:
           id: ota_mode
