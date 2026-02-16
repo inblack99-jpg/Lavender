@@ -4,12 +4,6 @@ esphome:
   on_boot:
     priority: 600
     then:
-      - light.turn_on:
-          id: status_led
-          red: 20%
-          green: 0%
-          blue: 0%
-          brightness: 25%
       - if:
           condition:
             lambda: 'return id(ota_mode);'
@@ -44,16 +38,7 @@ wifi:
     dns1: 192.168.1.79
     dns2: 192.168.0.1
 
-# The specific driver for the Super Mini S3 onboard LED
-light:
-  - platform: esp32_rmt_led_strip
-    id: status_led
-    name: "Internal LED"
-    pin: GPIO48
-    chipset: WS2812
-    num_leds: 1
-    rgb_order: GRB
-    default_transition_length: 500ms
+
 
 sensor:
   - platform: hx711
