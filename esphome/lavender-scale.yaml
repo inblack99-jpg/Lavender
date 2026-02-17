@@ -4,11 +4,7 @@ esphome:
   on_boot:
     priority: 600
     then:
-      - if:
-          condition:
-            lambda: 'return id(ota_mode);'
-          then:
-            - deep_sleep.prevent: deep_sleep_component
+
 
 esp32:
   variant: esp32s3
@@ -64,36 +60,26 @@ sensor:
     pin: GPIO4
     attenuation: auto
     update_interval: 60s
-    unit_of_measurement: "V"
-    icon: "mdi:battery"
-    accuracy_decimals: 2
+    unit_of_measurement: "%"
+    icon: "mdi:battery-charging"
+    accuracy_decimals: 0
     filters:
       # The battery voltage is measured using a 1:2 voltage divider (two 100kΩ resistors).
       # This scales the voltage down by half. We multiply the ADC reading by 2.0 to get the true battery voltage.
       - multiply: 2.0
+      - calibrate_linear:
+          # (Voltage) -> (Percentage)
+          - 3.0 -> 0.0
+          - 3.45 -> 25.0
+          - 3.7 -> 50.0
+          - 3.95 -> 75.0
+          - 4.2 -> 100.0
+      - clamp:
+          min_value: 0.0
+          max_value: 100.0
 
-globals:
-  - id: ota_mode
-    type: bool
-    restore_value: yes
-    initial_value: 'false'
 
-switch:
-  - platform: template
-    name: "Lavender Scale OTA Mode"
-    id: ota_mode_switch
-    lambda: 'return id(ota_mode);'
-    optimistic: false
-    on_turn_on:
-      - globals.set:
-          id: ota_mode
-          value: 'true'
-      - deep_sleep.prevent: deep_sleep_component
-    on_turn_off:
-      - globals.set:
-          id: ota_mode
-          value: 'false'
-      - deep_sleep.allow: deep_sleep_component
+
 
 deep_sleep:
   id: deep_sleep_component
