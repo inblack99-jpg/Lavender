@@ -80,7 +80,6 @@ sensor:
           max_value: 100.0
 
   - platform: sht3xd
-    name: "Lavender Plant Temperature"
     temperature:
       name: "Lavender Plant Temperature"
       unit_of_measurement: "°F"
