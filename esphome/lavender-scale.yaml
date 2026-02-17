@@ -81,7 +81,71 @@ sensor:
 
 
 
+i2c:
+  sda: GPIO8
+  scl: GPIO9
+  scan: True
+  id: bus_a
+
+sensor:
+  - platform: hx711
+    name: "Lavender Scale"
+    dout_pin: GPIO2
+    clk_pin: GPIO1
+    gain: 128
+    update_interval: 10s
+    unit_of_measurement: "g"
+    accuracy_decimals: 1
+    filters:
+      - median:
+          window_size: 3
+          send_every: 1
+      - calibrate_linear:
+          # (Raw Value) -> (Actual Grams)
+          - 29430 -> 0.0
+          - -14750 -> 100.0
+    icon: "mdi:scale"
+
+  - platform: adc
+    name: "Lavender Scale Battery"
+    pin: GPIO4
+    attenuation: auto
+    update_interval: 60s
+    unit_of_measurement: "%"
+    icon: "mdi:battery-charging"
+    accuracy_decimals: 0
+    filters:
+      # The battery voltage is measured using a 1:2 voltage divider (two 100kΩ resistors).
+      # This scales the voltage down by half. We multiply the ADC reading by 2.0 to get the true battery voltage.
+      - multiply: 2.0
+      - calibrate_linear:
+          # (Voltage) -> (Percentage)
+          - 3.0 -> 0.0
+          - 3.45 -> 25.0
+          - 3.7 -> 50.0
+          - 3.95 -> 75.0
+          - 4.2 -> 100.0
+      - clamp:
+          min_value: 0.0
+          max_value: 100.0
+
+  - platform: sht3xd
+    name: "Lavender Plant Temperature"
+    temperature:
+      name: "Lavender Plant Temperature"
+      unit_of_measurement: "°F"
+      accuracy_decimals: 1
+      filters:
+        - lambda: return x * 1.8 + 32; # Convert to Fahrenheit
+    humidity:
+      name: "Lavender Plant Humidity"
+      unit_of_measurement: "%"
+      accuracy_decimals: 1
+    update_interval: 60s
+    address: 0x44
+    i2c_id: bus_a
+
 deep_sleep:
   id: deep_sleep_component
-  run_duration: 60s
-  sleep_duration: 10min
+  run_duration: 15s
+  sleep_duration: 60min
