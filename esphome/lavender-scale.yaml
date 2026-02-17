@@ -36,56 +36,6 @@ wifi:
 
 
 
-sensor:
-  - platform: hx711
-    name: "Lavender Scale"
-    dout_pin: GPIO2
-    clk_pin: GPIO1
-    gain: 128
-    update_interval: 10s
-    unit_of_measurement: "g"
-    accuracy_decimals: 1
-    filters:
-      - median:
-          window_size: 3
-          send_every: 1
-      - calibrate_linear:
-          # (Raw Value) -> (Actual Grams)
-          - 29430 -> 0.0
-          - -14750 -> 100.0
-    icon: "mdi:scale"
-
-  - platform: adc
-    name: "Lavender Scale Battery"
-    pin: GPIO4
-    attenuation: auto
-    update_interval: 60s
-    unit_of_measurement: "%"
-    icon: "mdi:battery-charging"
-    accuracy_decimals: 0
-    filters:
-      # The battery voltage is measured using a 1:2 voltage divider (two 100kΩ resistors).
-      # This scales the voltage down by half. We multiply the ADC reading by 2.0 to get the true battery voltage.
-      - multiply: 2.0
-      - calibrate_linear:
-          # (Voltage) -> (Percentage)
-          - 3.0 -> 0.0
-          - 3.45 -> 25.0
-          - 3.7 -> 50.0
-          - 3.95 -> 75.0
-          - 4.2 -> 100.0
-      - clamp:
-          min_value: 0.0
-          max_value: 100.0
-
-
-
-
-i2c:
-  sda: GPIO8
-  scl: GPIO9
-  scan: True
-  id: bus_a
 
 sensor:
   - platform: hx711
@@ -124,7 +74,7 @@ sensor:
           - 3.45 -> 25.0
           - 3.7 -> 50.0
           - 3.95 -> 75.0
-          - 4.2 -> 100.0
+          - 4.19 -> 100.0
       - clamp:
           min_value: 0.0
           max_value: 100.0
