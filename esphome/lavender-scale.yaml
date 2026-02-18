@@ -112,8 +112,6 @@ deep_sleep:
   id: deep_sleep_component
   run_duration: 15s
   sleep_duration: 60min
-  on_sleep:
-    - switch.turn_off: sensor_power
 
 switch:
   - platform: gpio
