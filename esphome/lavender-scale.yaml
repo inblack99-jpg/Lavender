@@ -1,6 +1,10 @@
 esphome:
   name: lavender-scale
   friendly_name: Lavender Scale
+  on_boot:
+    priority: 800
+    then:
+      - delay: 1000ms
 
 deep_sleep:
   id: deep_sleep_component
