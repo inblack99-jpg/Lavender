@@ -5,11 +5,6 @@ esphome:
     priority: 600
     then:
       - switch.turn_on: sensor_power
-      - switch.turn_on: voltage_divider_ground
-      - component.update: lavender_scale_battery
-      - wait_until:
-          condition:
-            lambda: 'return !std::isnan(id(lavender_scale_battery).state);'
       - switch.turn_off: voltage_divider_ground
 
 
@@ -118,7 +113,9 @@ switch:
     name: "Voltage Divider Ground"
     pin: GPIO10
     id: voltage_divider_ground
+    restore_mode: ALWAYS_OFF
   - platform: gpio
     name: "Sensor Power"
     pin: GPIO11
     id: sensor_power
+    restore_mode: ALWAYS_ON
