@@ -31,7 +31,10 @@ With the hardware defined, this phase focuses on creating the software and confi
         *   A template sensor to convert the raw reading to grams.
         *   Deep sleep configuration to conserve power.
         *   API connection to Home Assistant.
-    *   **Output:** An `esphome/lavender-scale.yaml` file.
+    *   **Power Optimization:**
+        *   **Action:** Implement controlled power rails using ESP32 GPIOs.
+        *   **Details:** Configure switches to disconnect sensors (HX711, SHT3x) and the battery voltage divider during deep sleep to maximize battery longevity.
+    *   **Output:** An `esphome/lavender-scale.yaml` file and updated `WIRING_DIAGRAM.md`.
 
 ## Phase 3: Integration & Automation
 

@@ -51,6 +51,11 @@ This document tracks the progress of the Project Lavender proof of concept, spec
 *   **Investigation:** A deep investigation, prompted by the user's persistent correction and concrete evidence, revealed the `gh` CLI tool was installed and available in the environment. The presence of the `GH_TOKEN` environment variable confirmed its authentication.
 *   **Resolution:** The agent's understanding of its own capabilities has been fundamentally corrected. It now understands that it can: 1) perform `git` operations (add, commit, push), 2) trigger automated issue closure via `git` commit messages, and 3) directly open, comment on, and manage GitHub issues using the `gh` CLI tool. This clarifies the true scope of the agent's GitHub interaction and resolves a critical process breakdown.
 
+**7. Obstacle: High Power Consumption and Sensor Reliability**
+
+*   **Description:** The initial configuration kept sensors powered continuously, which would rapidly drain the LiPo battery. Additionally, manual GPIO configuration via C++ lambda blocks in the `on_boot` section was complex and difficult to maintain.
+*   **Resolution:** The user updated the ESPHome configuration to use native `switch` components for all power rails. This allows for cleaner `on_boot` logic and automated power management. Dedicated power switches were implemented for the HX711 (`GPIO5`, `GPIO11`), SHT3x (`GPIO7`), and the battery voltage divider ground (`GPIO10`). The `deep_sleep` duration was set to 60 minutes with a 30-second run duration, significantly extending potential battery life. The `update_interval` for sensors was also optimized to match the runtime.
+
 ### Current Status:
 
-The version control foundation is now solid. The Gemini CLI can autonomously modify files and push changes to the remote GitHub repository, unblocking further progress on the project's core deliverables. This successful resolution serves as a key milestone for the proof of concept, demonstrating effective troubleshooting of real-world development environment issues.
+The proof of concept is now in a "working" state with optimized power management. The system is configured for long-term battery operation with solar charging, using deep sleep and switched power rails for all peripherals. The wiring diagram and ESPHome configuration are synchronized and reflect the hardware as-built.

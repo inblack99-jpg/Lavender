@@ -2,22 +2,18 @@ esphome:
   name: lavender-scale
   friendly_name: Lavender Scale
   on_boot:
-    priority: 1100
+    priority: 800
     then:
-      - lambda: |-
-          gpio_config_t io_conf;
-          io_conf.intr_type = GPIO_INTR_DISABLE;
-          io_conf.mode = GPIO_MODE_OUTPUT;
-          io_conf.pin_bit_mask = (1ULL<<10) | (1ULL<<11);
-          io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-          io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
-          gpio_config(&io_conf);
-          gpio_set_level((gpio_num_t)10, 0);
-          gpio_set_level((gpio_num_t)11, 1);
-      - delay: 100ms
-      - switch.turn_on: sensor_power
+      - switch.turn_on: sensor_hx711_1
+      - switch.turn_on: sensor_hx711_2
+      - switch.turn_on: sensor_sht3x
       - switch.turn_off: voltage_divider_ground
+      - delay: 1000ms
 
+deep_sleep:
+  id: deep_sleep_component
+  run_duration: 30s
+  sleep_duration: 60min
 
 esp32:
   variant: esp32s3
@@ -56,7 +52,7 @@ sensor:
     dout_pin: GPIO2
     clk_pin: GPIO1
     gain: 128
-    update_interval: 10s
+    update_interval: 60s
     unit_of_measurement: "g"
     accuracy_decimals: 1
     filters:
@@ -114,19 +110,22 @@ i2c:
   scan: True
   id: bus_a
 
-deep_sleep:
-  id: deep_sleep_component
-  run_duration: 30s
-  sleep_duration: 60min
+
 
 switch:
   - platform: gpio
-    name: "Voltage Divider Ground"
+    pin: GPIO05
+    id: sensor_hx711_1
+    restore_mode: ALWAYS_ON
+  - platform: gpio
+    pin: GPIO11
+    id: sensor_hx711_2
+    restore_mode: ALWAYS_ON    
+  - platform: gpio
+    pin: GPIO07
+    id: sensor_sht3x
+    restore_mode: ALWAYS_ON
+  - platform: gpio
     pin: GPIO10
     id: voltage_divider_ground
     restore_mode: ALWAYS_OFF
-  - platform: gpio
-    name: "Sensor Power"
-    pin: GPIO11
-    id: sensor_power
-    restore_mode: ALWAYS_ON

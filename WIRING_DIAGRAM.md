@@ -17,54 +17,45 @@ This document outlines the pin connections between the ESP32, the HX711 Amplifie
 - `GND`: Ground (for Solar Cell input)
 - `B+`: LiPo Battery Positive Terminal
 - `B-`: LiPo Battery Negative Terminal
-- `GPIO1`: General Purpose Input/Output Pin (for SCK)
-- `GPIO2`: General Purpose Input/Output Pin (for DOUT)
-- `GPIO4`: General Purpose Input/Output Pin (for Battery Voltage Sensing)
-
+- `GPIO1`: Serial Clock (SCK) for HX711
+- `GPIO2`: Data Out (DOUT) for HX711
+- `GPIO4`: Battery Voltage Sensing (ADC)
+- `GPIO5`: HX711 Power Control (Primary)
+- `GPIO11`: HX711 Power Control (Secondary)
+- `GPIO7`: SHT3x Power Control
+- `GPIO10`: Voltage Divider Ground Control
+- `GPIO8`: I2C SDA
+- `GPIO9`: I2C SCL
 
 ### HX711 Amplifier
-- `VCC`: Power Input (connects to 5V from ESP32)
+- `VCC`: Power Input (connects to controlled GPIO from ESP32)
 - `GND`: Ground
 - `SCK`: Serial Clock (Output)
 - `DT`: Data (Input, often labeled DOUT)
 - `E+`, `E-`, `A+`, `A-`: Load Cell connections
+
+### SHT3x Temperature/Humidity Sensor
+- `VCC`: Power Input (connects to controlled GPIO from ESP32)
+- `GND`: Ground
+- `SDA`: I2C Data
+- `SCL`: I2C Clock
 
 ### Load Cell (4 Wires)
 - `Red`: Excitation+ (E+)
 - `Black`: Excitation- (E-)
 - `White`: Output- (A-)
 - `Green`: Output+ (A+)
-  *(Note: Wire colors can vary. Always refer to the datasheet for your specific load cell if available.)*
 
-## Wiring Connections
+## Power Management (Deep Sleep Optimization)
 
-This diagram shows the direct connections to be made between the components.
+To maximize battery life, the system uses GPIO pins to control power to the sensors. These pins are turned ON only when a measurement is needed and turned OFF before entering deep sleep.
 
-```
-+------------+                          +------------------+                    +-----------------+
-| Solar Cell |------------------------->| ESP32 Super Mini |                    | HX711 Amplifier |
-| (5V Reg.)  |                          | (with LiPo Chrgr)|                    |                 |
-| [+]        |------------------------->| 5V / VBUS        |------------------->| VCC             |
-| [-]        |------------------------->| GND              |------------------->| GND             |
-|            |                          |                  |                    |                 |
-+------------+                          | B+               |<-------------------| + (LiPo Battery) |
-                                        | B-               |<-------------------| - (LiPo Battery) |
-                                        |                  |                    |                 |
-                                        |           GPIO1 |<------------------>| SCK             |
-                                        |           GPIO2 |<------------------>| DT              |
-                                        |                  |                    |                 |
-                                        +------------------+                    +-----------------+
-                                                                                      | | | |
-                                                                                      | | | |
-                                                                                      | | | +------> E+ (Red)
-                                                                                      | | +------> E- (Black)
-                                                                                      | +------> A+ (Green)
-                                                                                      +------> A- (White)
-                                                                                           |
-                                                                                    +-------------+
-                                                                                    |  Load Cell  |
-                                                                                    +-------------+
-```
+| ESP32 Pin | Target Component | Purpose |
+| :---: | :--- | :--- |
+| `GPIO5` | HX711 (VCC) | Primary power switch for the scale amplifier. |
+| `GPIO11` | HX711 (VCC/Aux) | Secondary/Backup power switch for the scale amplifier. |
+| `GPIO7` | SHT3x (VCC) | Power switch for the temperature/humidity sensor. |
+| `GPIO10` | Voltage Divider | Ground reference switch. Set to LOW to enable reading, HIGH/Float to disable. |
 
 ## Connection Summary Table
 
@@ -79,42 +70,33 @@ This diagram shows the direct connections to be made between the components.
 ### HX711 Connections
 | ESP32 Pin | Connects To | HX711 Pin | Notes |
 | :---: | :---: | :---: | :--- |
-| `5V` | --> | `VCC` | Powers the amplifier. |
+| `GPIO5` | --> | `VCC` | Controlled power rail (Primary). |
+| `GPIO11` | --> | `VCC` | Controlled power rail (Secondary). |
 | `GND` | --> | `GND` | Common ground reference. |
 | `GPIO2` | --> | `DT` | Data line from the amplifier. |
 | `GPIO1` | --> | `SCK` | Clock line to the amplifier. |
 
-### Load Cell Connections
-| HX711 Pin | Connects To | Load Cell Wire |
-| :---: | :---: | :---: |
-| `E+` | --> | Red |
-| `E-` | --> | Black |
-| `A+` | --> | Green |
-| `A-` | --> | White |
+### SHT3x Connections
+| ESP32 Pin | Connects To | SHT3x Pin | Notes |
+| :---: | :---: | :---: | :--- |
+| `GPIO7` | --> | `VCC` | Controlled power rail. |
+| `GND` | --> | `GND` | Common ground reference. |
+| `GPIO8` | --> | `SDA` | I2C Data line. |
+| `GPIO9` | --> | `SCL` | I2C Clock line. |
 
-## Battery Voltage Sensor
+### Battery Voltage Sensor (with Leakage Protection)
+| ESP32 Pin | Connects To | Component | Notes |
+| :---: | :---: | :--- | :--- |
+| `GPIO4` | --> | Voltage Divider (Middle) | ADC Input. |
+| `GPIO10` | --> | Voltage Divider (Bottom) | Ground switch to prevent drain. |
 
-To accurately measure the LiPo battery's voltage, a voltage divider is required. This circuit scales the battery's voltage (up to 4.2V) down to a level that is safe for the ESP32's ADC (Analog-to-Digital Converter), which can only handle up to 3.3V.
-
-### Circuit
-
-The circuit uses two identical resistors to create a 1:2 divider. This means the voltage read by the ESP32 at `GPIO4` will be exactly half of the actual battery voltage.
+## Battery Voltage Sensor Circuit
 
 ```
-(Battery +) --- [R1] ---+--- (ESP32 GPIO4)
-                        |
-                       [R2]
-                        |
-                       GND
+(Battery +) --- [100kΩ] ---+--- (ESP32 GPIO4)
+                           |
+                        [100kΩ]
+                           |
+                     (ESP32 GPIO10)
 ```
-
-### Parts Required
-
-*   **R1:** 100kΩ Resistor
-*   **R2:** 100kΩ Resistor
-
-### Connections
-
-1.  Connect the **positive terminal of the LiPo battery** to one end of the first resistor (`R1`).
-2.  Connect the other end of `R1` to both **`GPIO4` on the ESP32** and one end of the second resistor (`R2`).
-3.  Connect the other end of `R2` to **`GND`** on the ESP32.
+Set `GPIO10` to Output LOW during measurement, and High-Impedance (Input) or HIGH during sleep to stop current flow through the resistors.
