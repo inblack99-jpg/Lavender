@@ -4,6 +4,7 @@ esphome:
   on_boot:
     priority: 600
     then:
+      - switch.turn_on: sensor_power
       - switch.turn_on: voltage_divider_ground
       - wait_until:
           sensor.has_value:
@@ -110,6 +111,8 @@ deep_sleep:
   id: deep_sleep_component
   run_duration: 15s
   sleep_duration: 60min
+  pre_deep_sleep:
+    - switch.turn_off: sensor_power
 
 switch:
   - platform: gpio
