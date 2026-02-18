@@ -116,3 +116,7 @@ switch:
     name: "Voltage Divider Ground"
     pin: GPIO10
     id: voltage_divider_ground
+  - platform: gpio
+    name: "Sensor Power"
+    pin: GPIO11
+    id: sensor_power
