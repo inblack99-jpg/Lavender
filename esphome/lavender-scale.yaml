@@ -6,9 +6,10 @@ esphome:
     then:
       - switch.turn_on: sensor_power
       - switch.turn_on: voltage_divider_ground
+      - component.update: lavender_scale_battery
       - wait_until:
-          sensor.has_value:
-            id: lavender_scale_battery
+          condition:
+            lambda: 'return !std::isnan(id(lavender_scale_battery).state);'
       - switch.turn_off: voltage_divider_ground
 
 
