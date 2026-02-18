@@ -2,8 +2,19 @@ esphome:
   name: lavender-scale
   friendly_name: Lavender Scale
   on_boot:
-    priority: 600
+    priority: 1100
     then:
+      - lambda: |-
+          gpio_config_t io_conf;
+          io_conf.intr_type = GPIO_INTR_DISABLE;
+          io_conf.mode = GPIO_MODE_OUTPUT;
+          io_conf.pin_bit_mask = (1ULL<<10) | (1ULL<<11);
+          io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+          io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+          gpio_config(&io_conf);
+          gpio_set_level((gpio_num_t)10, 0);
+          gpio_set_level((gpio_num_t)11, 1);
+      - delay: 100ms
       - switch.turn_on: sensor_power
       - switch.turn_off: voltage_divider_ground
 
@@ -105,7 +116,7 @@ i2c:
 
 deep_sleep:
   id: deep_sleep_component
-  run_duration: 15s
+  run_duration: 30s
   sleep_duration: 60min
 
 switch:
