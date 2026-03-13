@@ -59,3 +59,31 @@ This document tracks the progress of the Project Lavender proof of concept, spec
 ### Current Status:
 
 The proof of concept is now in a "working" state with optimized power management. The system is configured for long-term battery operation with solar charging, using deep sleep and switched power rails for all peripherals. The wiring diagram and ESPHome configuration are synchronized and reflect the hardware as-built.
+
+---
+
+## Phase 1: Local Development & Compilation
+
+### Completed Tasks:
+- **Local Environment Setup:** Identified the agent environment as a Debian-based system (Raspberry Pi 5) with root access, enabling the installation of system packages via `apt`.
+- **Python & ESPHome Installation:** Installed Python 3, `pip`, and `venv`. Set up a dedicated virtual environment at `/opt/esphome-venv` and installed the `esphome` CLI tool.
+- **Configuration Validation:** Successfully validated the `lavender-scale.yaml` configuration file using the local ESPHome CLI and a placeholder `secrets.yaml`.
+- **Local Firmware Compilation:** Successfully compiled the ESPHome firmware for the ESP32-S3 Super Mini locally. This eliminates the dependency on the remote Portainer/Docker server for the build process.
+- **Issue Resolution:** Closed Issue #13 ("Install ESPHome CLI") on GitHub.
+
+### Obstacles Overcome:
+
+**8. Obstacle: Missing Local Development Tools**
+
+*   **Description:** The agent environment initially appeared to lack the necessary Python tools to install and run the ESPHome CLI, which was a blocker for local configuration validation and compilation.
+*   **Discovery & Resolution:** Discovered that the agent was running as `root` on a Debian system with `apt` available. This allowed for the direct installation of `python3`, `python3-pip`, and `python3-venv`. By using a virtual environment, the `esphome` CLI was successfully installed without affecting the base system.
+*   **Impact:** This transformation from a restricted Node-only environment to a full-featured development environment allows the agent to perform local builds and validation, significantly speeding up the development cycle.
+
+**9. Obstacle: Missing `secrets.yaml` for Local Validation**
+
+*   **Description:** Local ESPHome validation failed because the required `secrets.yaml` file was missing from the `Lavender` project.
+*   **Resolution:** Created a placeholder `secrets.yaml` with dummy values. This allowed the `esphome config` command to successfully parse and validate the YAML syntax without requiring actual network credentials.
+
+### Current Status:
+
+The project has moved from a documentation-only state to a fully functional local development environment. Firmware can now be compiled locally, and configuration changes can be verified immediately. The next step is to establish a reliable method for flashing the compiled binary to the ESP32-S3, either via a local serial connection (if hardware is attached) or via OTA (when the device is awake and reachable).
